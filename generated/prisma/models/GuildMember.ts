@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums.js"
-import type * as Prisma from "../internal/prismaNamespace.js"
+import type * as $Enums from "../enums"
+import type * as Prisma from "../internal/prismaNamespace"
 
 /**
  * Model GuildMember
@@ -29,6 +29,7 @@ export type GuildMemberMinAggregateOutputType = {
   guildId: string | null
   userId: string | null
   joinedAt: Date | null
+  leftAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -38,6 +39,7 @@ export type GuildMemberMaxAggregateOutputType = {
   guildId: string | null
   userId: string | null
   joinedAt: Date | null
+  leftAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -47,6 +49,7 @@ export type GuildMemberCountAggregateOutputType = {
   guildId: number
   userId: number
   joinedAt: number
+  leftAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -58,6 +61,7 @@ export type GuildMemberMinAggregateInputType = {
   guildId?: true
   userId?: true
   joinedAt?: true
+  leftAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -67,6 +71,7 @@ export type GuildMemberMaxAggregateInputType = {
   guildId?: true
   userId?: true
   joinedAt?: true
+  leftAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -76,6 +81,7 @@ export type GuildMemberCountAggregateInputType = {
   guildId?: true
   userId?: true
   joinedAt?: true
+  leftAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -158,6 +164,7 @@ export type GuildMemberGroupByOutputType = {
   guildId: string
   userId: string
   joinedAt: Date | null
+  leftAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: GuildMemberCountAggregateOutputType | null
@@ -188,6 +195,7 @@ export type GuildMemberWhereInput = {
   guildId?: Prisma.StringFilter<"GuildMember"> | string
   userId?: Prisma.StringFilter<"GuildMember"> | string
   joinedAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
+  leftAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
   guild?: Prisma.XOR<Prisma.GuildScalarRelationFilter, Prisma.GuildWhereInput>
@@ -199,6 +207,7 @@ export type GuildMemberOrderByWithRelationInput = {
   guildId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  leftAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   guild?: Prisma.GuildOrderByWithRelationInput
@@ -214,6 +223,7 @@ export type GuildMemberWhereUniqueInput = Prisma.AtLeast<{
   guildId?: Prisma.StringFilter<"GuildMember"> | string
   userId?: Prisma.StringFilter<"GuildMember"> | string
   joinedAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
+  leftAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
   guild?: Prisma.XOR<Prisma.GuildScalarRelationFilter, Prisma.GuildWhereInput>
@@ -225,6 +235,7 @@ export type GuildMemberOrderByWithAggregationInput = {
   guildId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  leftAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GuildMemberCountOrderByAggregateInput
@@ -240,6 +251,7 @@ export type GuildMemberScalarWhereWithAggregatesInput = {
   guildId?: Prisma.StringWithAggregatesFilter<"GuildMember"> | string
   userId?: Prisma.StringWithAggregatesFilter<"GuildMember"> | string
   joinedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"GuildMember"> | Date | string | null
+  leftAt?: Prisma.DateTimeNullableWithAggregatesFilter<"GuildMember"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"GuildMember"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"GuildMember"> | Date | string
 }
@@ -247,6 +259,7 @@ export type GuildMemberScalarWhereWithAggregatesInput = {
 export type GuildMemberCreateInput = {
   id?: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   guild: Prisma.GuildCreateNestedOneWithoutMembersInput
@@ -258,6 +271,7 @@ export type GuildMemberUncheckedCreateInput = {
   guildId: string
   userId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -265,6 +279,7 @@ export type GuildMemberUncheckedCreateInput = {
 export type GuildMemberUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   guild?: Prisma.GuildUpdateOneRequiredWithoutMembersNestedInput
@@ -276,6 +291,7 @@ export type GuildMemberUncheckedUpdateInput = {
   guildId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -285,6 +301,7 @@ export type GuildMemberCreateManyInput = {
   guildId: string
   userId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -292,6 +309,7 @@ export type GuildMemberCreateManyInput = {
 export type GuildMemberUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -301,6 +319,7 @@ export type GuildMemberUncheckedUpdateManyInput = {
   guildId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -325,6 +344,7 @@ export type GuildMemberCountOrderByAggregateInput = {
   guildId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  leftAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -334,6 +354,7 @@ export type GuildMemberMaxOrderByAggregateInput = {
   guildId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  leftAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -343,6 +364,7 @@ export type GuildMemberMinOrderByAggregateInput = {
   guildId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
+  leftAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -438,6 +460,7 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 export type GuildMemberCreateWithoutUserInput = {
   id?: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   guild: Prisma.GuildCreateNestedOneWithoutMembersInput
@@ -447,6 +470,7 @@ export type GuildMemberUncheckedCreateWithoutUserInput = {
   id?: string
   guildId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -485,6 +509,7 @@ export type GuildMemberScalarWhereInput = {
   guildId?: Prisma.StringFilter<"GuildMember"> | string
   userId?: Prisma.StringFilter<"GuildMember"> | string
   joinedAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
+  leftAt?: Prisma.DateTimeNullableFilter<"GuildMember"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"GuildMember"> | Date | string
 }
@@ -492,6 +517,7 @@ export type GuildMemberScalarWhereInput = {
 export type GuildMemberCreateWithoutGuildInput = {
   id?: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGuildMembersInput
@@ -501,6 +527,7 @@ export type GuildMemberUncheckedCreateWithoutGuildInput = {
   id?: string
   userId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -535,6 +562,7 @@ export type GuildMemberCreateManyUserInput = {
   id?: string
   guildId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -542,6 +570,7 @@ export type GuildMemberCreateManyUserInput = {
 export type GuildMemberUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   guild?: Prisma.GuildUpdateOneRequiredWithoutMembersNestedInput
@@ -551,6 +580,7 @@ export type GuildMemberUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   guildId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -559,6 +589,7 @@ export type GuildMemberUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   guildId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -567,6 +598,7 @@ export type GuildMemberCreateManyGuildInput = {
   id?: string
   userId: string
   joinedAt?: Date | string | null
+  leftAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -574,6 +606,7 @@ export type GuildMemberCreateManyGuildInput = {
 export type GuildMemberUpdateWithoutGuildInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGuildMembersNestedInput
@@ -583,6 +616,7 @@ export type GuildMemberUncheckedUpdateWithoutGuildInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -591,6 +625,7 @@ export type GuildMemberUncheckedUpdateManyWithoutGuildInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -602,6 +637,7 @@ export type GuildMemberSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   guildId?: boolean
   userId?: boolean
   joinedAt?: boolean
+  leftAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   guild?: boolean | Prisma.GuildDefaultArgs<ExtArgs>
@@ -613,6 +649,7 @@ export type GuildMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   guildId?: boolean
   userId?: boolean
   joinedAt?: boolean
+  leftAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   guild?: boolean | Prisma.GuildDefaultArgs<ExtArgs>
@@ -624,6 +661,7 @@ export type GuildMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   guildId?: boolean
   userId?: boolean
   joinedAt?: boolean
+  leftAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   guild?: boolean | Prisma.GuildDefaultArgs<ExtArgs>
@@ -635,11 +673,12 @@ export type GuildMemberSelectScalar = {
   guildId?: boolean
   userId?: boolean
   joinedAt?: boolean
+  leftAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GuildMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "guildId" | "userId" | "joinedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["guildMember"]>
+export type GuildMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "guildId" | "userId" | "joinedAt" | "leftAt" | "createdAt" | "updatedAt", ExtArgs["result"]["guildMember"]>
 export type GuildMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   guild?: boolean | Prisma.GuildDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -664,6 +703,7 @@ export type $GuildMemberPayload<ExtArgs extends runtime.Types.Extensions.Interna
     guildId: string
     userId: string
     joinedAt: Date | null
+    leftAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["guildMember"]>
@@ -1095,6 +1135,7 @@ export interface GuildMemberFieldRefs {
   readonly guildId: Prisma.FieldRef<"GuildMember", 'String'>
   readonly userId: Prisma.FieldRef<"GuildMember", 'String'>
   readonly joinedAt: Prisma.FieldRef<"GuildMember", 'DateTime'>
+  readonly leftAt: Prisma.FieldRef<"GuildMember", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"GuildMember", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"GuildMember", 'DateTime'>
 }

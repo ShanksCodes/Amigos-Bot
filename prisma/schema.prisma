@@ -45,6 +45,7 @@ model GuildMember {
   guildId   String
   userId    String
   joinedAt  DateTime?
+  leftAt    DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
