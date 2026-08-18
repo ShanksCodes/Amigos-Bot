@@ -8,8 +8,50 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  discordId String   @unique
+  id        String   @id
+  isBot     Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  profile      UserProfile?
+  guildMembers GuildMember[]
+}
+
+model UserProfile {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  timezone   String?
+  country    String?
+  birthDay   Int?
+  birthMonth Int?
+  birthYear  Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Guild {
+  id        String   @id
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members GuildMember[]
+}
+
+model GuildMember {
+  id        String    @id @default(uuid())
+  guildId   String
+  userId    String
+  joinedAt  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  guild Guild @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, userId])
+  @@index([userId])
+  @@index([guildId])
 }

@@ -46,3 +46,18 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model UserProfile
+ * 
+ */
+export type UserProfile = Prisma.UserProfileModel
+/**
+ * Model Guild
+ * 
+ */
+export type Guild = Prisma.GuildModel
+/**
+ * Model GuildMember
+ * 
+ */
+export type GuildMember = Prisma.GuildMemberModel
