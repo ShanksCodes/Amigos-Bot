@@ -21,15 +21,23 @@ export class DuelMediaService {
 
   private readonly GIFS: Record<string, string[]> = {
     'start': [],
-    'attack': [],
-    'attack_critical': [],
-    'attack_miss': [],
-    'defend': [],
+    'attack.glance': [
+      'https://media.discordapp.net/attachments/1541092200241307850/1541125449168592979/esubzAHjLdcIRJ3.gif?ex=6a8c746b&is=6a8b22eb&hm=f1aa041f717ad24550744ff278c673e6178880066b5e93f17f77697cd53510cb&=',
+    ],
+    'attack.normal_med': [
+      'https://media.discordapp.net/attachments/1541092200241307850/1541125449168592979/esubzAHjLdcIRJ3.gif?ex=6a8c746b&is=6a8b22eb&hm=f1aa041f717ad24550744ff278c673e6178880066b5e93f17f77697cd53510cb&=',
+    ],
+    'attack.heavy_mega': [
+      'https://media.discordapp.net/attachments/1541092200241307850/1541125449168592979/esubzAHjLdcIRJ3.gif?ex=6a8c746b&is=6a8b22eb&hm=f1aa041f717ad24550744ff278c673e6178880066b5e93f17f77697cd53510cb&=',
+    ],
+    'attack.ko': [],
     'parry': [],
+    'defend': [],
     'heal': [],
-    'knockout': [],
+    'miss': [],
     'victory': [],
     'defeat': [],
+    'forfeit': [],
   };
 
   getRandomText(category: string, defaultText: string = ''): string {

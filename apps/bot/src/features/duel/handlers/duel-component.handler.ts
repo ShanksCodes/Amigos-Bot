@@ -106,7 +106,7 @@ export class DuelComponentHandler implements DiscordComponent {
     session.state = DuelState.ACTIVE;
     this.sessionManager.updateSession(session.id, { state: DuelState.ACTIVE });
 
-    await this.renderCombatState(interaction, session, 'The duel begins!');
+    await this.renderCombatState(interaction, session, 'The duel begins!', false, undefined, 'start');
   }
 
   private async handleCombatAction(
@@ -184,8 +184,9 @@ export class DuelComponentHandler implements DiscordComponent {
               `*(QTE Failed: Too slow!)*\n${userMention(playerState.id)} ${flavorText} ${userMention(defenderState.id)} ` +
               (result.damage ? `for **${result.damage}** damage!` : '');
 
+            const gifCategory = result.isGameOver ? 'defeat' : result.mediaCategory;
             await interaction.editReply(
-              this.buildCombatMessage(failedSession, desc, result.isGameOver, playerState.id),
+              this.buildCombatMessage(failedSession, desc, result.isGameOver, playerState.id, gifCategory),
             );
           } catch (e) {
             this.logger.error('Failed to handle QTE timeout', e);
@@ -272,6 +273,8 @@ export class DuelComponentHandler implements DiscordComponent {
       description += `${userMention(playerState.id)} ${flavorText}`;
     }
 
+    let gifCategory = result.mediaCategory;
+
     if (result.isGameOver) {
       session.state = DuelState.FINISHED;
       session.winnerId = result.subType === 'parry' ? defenderState.id : playerState.id;
@@ -280,6 +283,8 @@ export class DuelComponentHandler implements DiscordComponent {
       const berries = await this.rewardService.awardWin(session, session.winnerId, loserId);
       await this.statsService.recordMatch(session, berries);
       this.sessionManager.removeSession(session.id);
+
+      gifCategory = 'victory';
 
       if (berries > 0) {
         description += `\n\n🏆 **${userMention(session.winnerId)} wins the duel and earns 🍓 ${berries} Berries!**`;
@@ -293,7 +298,7 @@ export class DuelComponentHandler implements DiscordComponent {
       this.sessionManager.updateSession(session.id, session);
     }
 
-    await this.renderCombatState(interaction, session, description, result.isGameOver, session.winnerId);
+    await this.renderCombatState(interaction, session, description, result.isGameOver, session.winnerId, gifCategory);
   }
 
   private async renderCombatState(
@@ -302,8 +307,9 @@ export class DuelComponentHandler implements DiscordComponent {
     description: string,
     isGameOver = false,
     winnerId?: string,
+    gifCategory?: string,
   ): Promise<void> {
-    const messagePayload = this.buildCombatMessage(session, description, isGameOver, winnerId);
+    const messagePayload = this.buildCombatMessage(session, description, isGameOver, winnerId, gifCategory);
     await interaction.update(messagePayload).catch((e) => {
       this.logger.error('Failed to update interaction', e);
     });
@@ -327,7 +333,7 @@ export class DuelComponentHandler implements DiscordComponent {
         const timeoutDesc = `*Turn timeout!*\n${userMention(loser.id)} took too long to move.\n\n🏆 **${userMention(winner.id)} wins by default${rewardText}**`;
 
         await interaction
-          .editReply(this.buildCombatMessage(session, timeoutDesc, true, winner.id))
+          .editReply(this.buildCombatMessage(session, timeoutDesc, true, winner.id, 'victory'))
           .catch(() => {});
       });
     }
@@ -358,7 +364,7 @@ export class DuelComponentHandler implements DiscordComponent {
       description += `🏆 **${userMention(winnerId)} wins by forfeit!**`;
     }
 
-    await this.renderCombatState(interaction, session, description, true, winnerId);
+    await this.renderCombatState(interaction, session, description, true, winnerId, 'forfeit');
   }
 
   private buildCombatMessage(
@@ -366,6 +372,7 @@ export class DuelComponentHandler implements DiscordComponent {
     description: string,
     isGameOver: boolean,
     winnerId?: string,
+    gifCategory?: string,
   ) {
     const isChallengerTurn = session.currentTurn === DuelTurn.CHALLENGER;
     const currentTurnUserId = isChallengerTurn ? session.challenger.id : session.opponent.id;
@@ -400,6 +407,14 @@ export class DuelComponentHandler implements DiscordComponent {
       embed.setFooter({
         text: 'Daily Limit Reached: You have already played 3 matches against this opponent today. This match will be unrecorded.',
       });
+    }
+
+    // Attach GIF if available for this category
+    if (gifCategory) {
+      const gifUrl = this.mediaService.getRandomGif(gifCategory);
+      if (gifUrl) {
+        embed.setImage(gifUrl);
+      }
     }
 
     const components = [];

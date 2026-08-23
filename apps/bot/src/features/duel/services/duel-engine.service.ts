@@ -57,7 +57,7 @@ export class DuelEngineService {
         if (isMiss) {
           subType = 'miss';
           textCategory = 'attack.miss';
-          mediaCategory = 'attack_miss';
+          mediaCategory = 'miss';
           newHp = defender.hp; 
         } else {
           // Tiered Base Damage Roll
@@ -75,28 +75,28 @@ export class DuelEngineService {
             damage = Math.floor(damage * DUEL_CONSTANTS.ATTACK_CRITICAL_MULTIPLIER);
             subType = 'critical';
             textCategory = 'attack.critical';
-            mediaCategory = 'attack_critical';
+            mediaCategory = 'attack.heavy_mega';
           } else if (tier === 'ONE_HIT_KO') {
             subType = 'critical';
             textCategory = 'attack.one_hit_ko';
-            mediaCategory = 'attack_critical';
+            mediaCategory = 'attack.ko';
           } else if (tier === 'MEGA_STRIKE') {
             subType = 'strong';
             textCategory = 'attack.mega';
-            mediaCategory = 'attack';
+            mediaCategory = 'attack.heavy_mega';
+          } else if (tier === 'HEAVY') {
+            subType = 'strong';
+            textCategory = 'attack.strong';
+            mediaCategory = 'attack.heavy_mega';
+          } else if (tier === 'GLANCE') {
+            subType = 'weak';
+            textCategory = 'attack.weak';
+            mediaCategory = 'attack.glance';
           } else {
-            // Determine flavor text based on damage dealt
-            if (damage < 15) {
-              subType = 'weak';
-              textCategory = 'attack.weak';
-            } else if (damage > 25) {
-              subType = 'strong';
-              textCategory = 'attack.strong';
-            } else {
-              subType = 'normal';
-              textCategory = 'attack.normal';
-            }
-            mediaCategory = 'attack';
+            // NORMAL or MEDIUM
+            subType = 'normal';
+            textCategory = tier === 'MEDIUM' ? 'attack.strong' : 'attack.normal';
+            mediaCategory = 'attack.normal_med';
           }
 
           // Apply Defender's defense modifiers (if they defended last turn)
@@ -130,7 +130,7 @@ export class DuelEngineService {
     const isGameOver = newHp <= 0;
     if (isGameOver && subType !== 'parry') {
        textCategory = 'knockout';
-       mediaCategory = 'knockout';
+       mediaCategory = 'defeat';
     }
 
     return {
