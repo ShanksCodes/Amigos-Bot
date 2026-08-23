@@ -87,9 +87,6 @@ importers:
       prisma:
         specifier: ^7.9.1
         version: 7.9.1(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@6.0.3)
-      ts-loader:
-        specifier: ^9.6.2
-        version: 9.6.2(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.2)(uglify-js@3.19.3))
       tsx:
         specifier: ^4.23.12
         version: 4.23.12
@@ -3107,17 +3104,6 @@ packages:
   triple-beam@1.4.1:
     resolution: {integrity: sha512-aZbgViZrg1QNcG+LULa7nhZpJTZSLm/mXnHXnbAbjmN5aSa0y7V+wvv6+4WaBtpISJzThKy+PIPxc1Nq1EJ9mg==}
     engines: {node: '>= 14.0.0'}
-
-  ts-loader@9.6.2:
-    resolution: {integrity: sha512-R4iuczmtgxvtuI556s+hTZ6/7Ee03VCAk/l/M8LY1OAsUgB7YydsCxkgq9D9pKRaD7GJqUi2u8fp9zZP/ufjKA==}
-    engines: {node: '>=12.0.0'}
-    peerDependencies:
-      loader-utils: '*'
-      typescript: '*'
-      webpack: ^4.0.0 || ^5.0.0
-    peerDependenciesMeta:
-      loader-utils:
-        optional: true
 
   ts-mixer@6.0.4:
     resolution: {integrity: sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA==}
@@ -6575,14 +6561,6 @@ snapshots:
       ieee754: 1.2.1
 
   triple-beam@1.4.1: {}
-
-  ts-loader@9.6.2(typescript@6.0.3)(webpack@5.106.2(esbuild@0.28.2)(uglify-js@3.19.3)):
-    dependencies:
-      chalk: 4.1.2
-      picomatch: 4.0.5
-      source-map: 0.7.4
-      typescript: 6.0.3
-      webpack: 5.106.2(esbuild@0.28.2)(uglify-js@3.19.3)
 
   ts-mixer@6.0.4: {}
 
