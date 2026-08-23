@@ -48,6 +48,8 @@ export interface DuelSession {
   state: DuelState;
   currentTurn: DuelTurn;
   mode: string;
+  isRanked: boolean;
+  turnsPlayed: number;
   startedAt: Date;
   lastActionAt: Date;
   winnerId?: string;

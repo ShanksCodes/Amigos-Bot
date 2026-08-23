@@ -5,6 +5,10 @@ export const DUEL_CONSTANTS = {
   TURN_TIMEOUT_MS: 30 * 1000,      // 30 seconds per turn
   BERRY_REWARD: 50,
   
+  // Anti-abuse limits
+  MAX_RANKED_MATCHES_PER_PAIR_DAILY: 3,
+  INSTANT_FORFEIT_THRESHOLD_MS: 10 * 1000, // Instant forfeit (<10s or 0 turns) gives 0 berries
+  
   // Base Damage Tiers (chances must sum to 1.0)
   DAMAGE_TIERS: [
     { name: 'ONE_HIT_KO', chance: 0.005, min: 100, max: 100 }, // 0.5% super rare instant knockout

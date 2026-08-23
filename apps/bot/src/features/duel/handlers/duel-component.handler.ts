@@ -169,10 +169,11 @@ export class DuelComponentHandler implements DiscordComponent {
             if (result.isGameOver) {
               failedSession.state = DuelState.FINISHED;
               failedSession.winnerId = playerState.id;
-              const berries = await this.rewardService.awardWin(playerState.id, defenderState.id);
+              const berries = await this.rewardService.awardWin(failedSession, playerState.id, defenderState.id);
               await this.statsService.recordMatch(failedSession, berries);
               this.sessionManager.removeSession(failedSession.id);
             } else {
+              failedSession.turnsPlayed += 1;
               failedSession.currentTurn =
                 failedSession.currentTurn === DuelTurn.CHALLENGER ? DuelTurn.OPPONENT : DuelTurn.CHALLENGER;
               this.sessionManager.updateSession(failedSession.id, failedSession);
@@ -276,12 +277,19 @@ export class DuelComponentHandler implements DiscordComponent {
       session.winnerId = result.subType === 'parry' ? defenderState.id : playerState.id;
 
       const loserId = session.winnerId === session.challenger.id ? session.opponent.id : session.challenger.id;
-      const berries = await this.rewardService.awardWin(session.winnerId, loserId);
+      const berries = await this.rewardService.awardWin(session, session.winnerId, loserId);
       await this.statsService.recordMatch(session, berries);
       this.sessionManager.removeSession(session.id);
 
-      description += `\n\n**${userMention(session.winnerId)} wins the duel and earns 🍓 ${berries} Berries!**`;
+      if (berries > 0) {
+        description += `\n\n**${userMention(session.winnerId)} wins the duel and earns 🍓 ${berries} Berries!**`;
+      } else if (!session.isRanked) {
+        description += `\n\n**${userMention(session.winnerId)} wins the duel!** *(Friendly Match — Daily limit reached)*`;
+      } else {
+        description += `\n\n**${userMention(session.winnerId)} wins the duel!**`;
+      }
     } else {
+      session.turnsPlayed += 1;
       session.currentTurn =
         session.currentTurn === DuelTurn.CHALLENGER ? DuelTurn.OPPONENT : DuelTurn.CHALLENGER;
       this.sessionManager.updateSession(session.id, session);
@@ -313,11 +321,12 @@ export class DuelComponentHandler implements DiscordComponent {
         session.state = DuelState.FINISHED;
         session.winnerId = winner.id;
 
-        const berries = await this.rewardService.awardWin(winner.id, loser.id);
+        const berries = await this.rewardService.awardWin(session, winner.id, loser.id);
         await this.statsService.recordMatch(session, berries);
         this.sessionManager.removeSession(session.id);
 
-        const timeoutDesc = `*Turn timeout!*\n${userMention(loser.id)} took too long to move.\n\n**${userMention(winner.id)} wins by default and earns 🍓 ${berries} Berries!**`;
+        const rewardText = berries > 0 ? ` and earns 🍓 ${berries} Berries!` : '!';
+        const timeoutDesc = `*Turn timeout!*\n${userMention(loser.id)} took too long to move.\n\n**${userMention(winner.id)} wins by default${rewardText}**`;
 
         await interaction
           .editReply(this.buildCombatMessage(session, timeoutDesc, true, winner.id))
@@ -340,11 +349,18 @@ export class DuelComponentHandler implements DiscordComponent {
     session.forfeitedById = forfeitingUserId;
     session.winnerId = winnerId;
 
-    const berries = await this.rewardService.awardWin(winnerId, forfeitingUserId);
+    const berries = await this.rewardService.awardWin(session, winnerId, forfeitingUserId);
     await this.statsService.recordMatch(session, berries);
     this.sessionManager.removeSession(session.id);
 
-    const description = `🏳️ ${userMention(forfeitingUserId)} has **forfeited** the duel!\n\n**${userMention(winnerId)} wins by forfeit and earns 🍓 ${berries} Berries!**`;
+    let description = `🏳️ ${userMention(forfeitingUserId)} has **forfeited** the duel!\n\n`;
+    if (berries > 0) {
+      description += `**${userMention(winnerId)} wins by forfeit and earns 🍓 ${berries} Berries!**`;
+    } else if (!session.isRanked) {
+      description += `**${userMention(winnerId)} wins by forfeit!** *(Friendly Match — Daily limit reached)*`;
+    } else {
+      description += `**${userMention(winnerId)} wins by forfeit!** *(No Berries awarded for instant forfeit)*`;
+    }
 
     await this.renderCombatState(interaction, session, description, true, winnerId);
   }

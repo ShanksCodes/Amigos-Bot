@@ -13,6 +13,8 @@ import { DuelSessionManager } from '../services/duel-session.manager.js';
 import { DuelStatisticsService } from '../services/duel-statistics.service.js';
 import { DUEL_CONSTANTS } from '../domain/constants.js';
 
+import { DuelRewardService } from '../services/duel-reward.service.js';
+
 @Injectable()
 export class DuelCommand implements DiscordCommand {
   private readonly logger = new Logger(DuelCommand.name);
@@ -51,6 +53,7 @@ export class DuelCommand implements DiscordCommand {
   constructor(
     private readonly sessionManager: DuelSessionManager,
     private readonly statsService: DuelStatisticsService,
+    private readonly rewardService: DuelRewardService,
   ) {}
 
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
@@ -93,15 +96,22 @@ export class DuelCommand implements DiscordCommand {
       return;
     }
 
+    const matchesToday = await this.rewardService.getPairMatchCountToday(challenger.id, targetUser.id);
+    const isRanked = matchesToday < DUEL_CONSTANTS.MAX_RANKED_MATCHES_PER_PAIR_DAILY;
+
     const sessionId = `${challenger.id}-${targetUser.id}-${Date.now()}`;
-    this.sessionManager.createSession(sessionId, challenger.id, targetUser.id);
+    this.sessionManager.createSession(sessionId, challenger.id, targetUser.id, isRanked);
+
+    const modeDisplay = isRanked
+      ? `Regular (Ranked • ${matchesToday + 1}/${DUEL_CONSTANTS.MAX_RANKED_MATCHES_PER_PAIR_DAILY})`
+      : 'Regular (Friendly • Daily limit reached)';
 
     const embed = new EmbedBuilder()
       .setTitle('⚔️ Duel Challenge!')
       .setDescription(`${userMention(challenger.id)} has challenged ${userMention(targetUser.id)} to a duel!`)
       .setColor('#FFA500')
       .addFields(
-        { name: 'Mode', value: 'Regular', inline: true },
+        { name: 'Mode', value: modeDisplay, inline: true },
         { name: 'Expires', value: `<t:${Math.floor(Date.now() / 1000) + 60}:R>`, inline: true }
       );
 

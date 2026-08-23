@@ -27,43 +27,52 @@ export class DuelStatisticsService {
       await this.ensureProfileExists(loserId);
 
       // Record History
+      const modeLabel = !session.isRanked
+        ? 'Friendly'
+        : session.state === 'FORFEITED'
+          ? 'Forfeit'
+          : session.mode;
+
       await this.prisma.duelHistory.create({
         data: {
           challengerId: session.challenger.id,
           opponentId: session.opponent.id,
           winnerId: session.winnerId,
-          mode: session.state === 'FORFEITED' ? 'Forfeit' : session.mode,
+          mode: modeLabel,
           startedAt: session.startedAt,
           endedAt: new Date(),
           berriesAwarded,
         },
       });
 
-      // Update Winner
-      const winnerProfile = await this.prisma.duelProfile.findUnique({ where: { userId: session.winnerId } });
-      const newWinStreak = (winnerProfile?.currentWinStreak ?? 0) + 1;
-      const bestWinStreak = Math.max(newWinStreak, winnerProfile?.bestWinStreak ?? 0);
+      // Only update competitive profile stats if the match was ranked
+      if (session.isRanked) {
+        // Update Winner
+        const winnerProfile = await this.prisma.duelProfile.findUnique({ where: { userId: session.winnerId } });
+        const newWinStreak = (winnerProfile?.currentWinStreak ?? 0) + 1;
+        const bestWinStreak = Math.max(newWinStreak, winnerProfile?.bestWinStreak ?? 0);
 
-      await this.prisma.duelProfile.update({
-        where: { userId: session.winnerId },
-        data: {
-          matchesPlayed: { increment: 1 },
-          wins: { increment: 1 },
-          currentWinStreak: newWinStreak,
-          bestWinStreak,
-          totalBerries: { increment: berriesAwarded },
-        },
-      });
+        await this.prisma.duelProfile.update({
+          where: { userId: session.winnerId },
+          data: {
+            matchesPlayed: { increment: 1 },
+            wins: { increment: 1 },
+            currentWinStreak: newWinStreak,
+            bestWinStreak,
+            totalBerries: { increment: berriesAwarded },
+          },
+        });
 
-      // Update Loser
-      await this.prisma.duelProfile.update({
-        where: { userId: loserId },
-        data: {
-          matchesPlayed: { increment: 1 },
-          losses: { increment: 1 },
-          currentWinStreak: 0,
-        },
-      });
+        // Update Loser
+        await this.prisma.duelProfile.update({
+          where: { userId: loserId },
+          data: {
+            matchesPlayed: { increment: 1 },
+            losses: { increment: 1 },
+            currentWinStreak: 0,
+          },
+        });
+      }
     } catch (error) {
       this.logger.error(`Failed to record duel statistics for session ${session.id}`, error);
     }
