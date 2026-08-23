@@ -4,6 +4,7 @@ export enum DuelState {
   FINISHED = 'FINISHED',
   DECLINED = 'DECLINED',
   TIMEOUT = 'TIMEOUT',
+  FORFEITED = 'FORFEITED',
 }
 
 export enum DuelTurn {
@@ -50,4 +51,5 @@ export interface DuelSession {
   startedAt: Date;
   lastActionAt: Date;
   winnerId?: string;
+  forfeitedById?: string;
 }

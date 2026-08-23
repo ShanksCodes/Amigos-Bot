@@ -59,6 +59,11 @@ export class DuelComponentHandler implements DiscordComponent {
       return;
     }
 
+    if (action === 'forfeit') {
+      await this.handleForfeit(interaction, session);
+      return;
+    }
+
     if (action === 'qte') {
       await this.handleQte(interaction, session, parts[3], parseInt(parts[4], 10));
       return;
@@ -136,7 +141,7 @@ export class DuelComponentHandler implements DiscordComponent {
         if (failedSession) {
           const result = this.engineService.processAction(failedSession, {
             type: actionType,
-            qteResult: { multiplier: 0.5, text: 'Too slow!' },
+            qteResult: { multiplier: 0.7, text: 'Too slow!' },
           });
 
           try {
@@ -321,34 +326,63 @@ export class DuelComponentHandler implements DiscordComponent {
     }
   }
 
+  private async handleForfeit(
+    interaction: ButtonInteraction,
+    session: DuelSession,
+  ): Promise<void> {
+    this.sessionManager.clearTimeout(session.id);
+
+    const forfeitingUserId = interaction.user.id;
+    const winnerId =
+      forfeitingUserId === session.challenger.id ? session.opponent.id : session.challenger.id;
+
+    session.state = DuelState.FORFEITED;
+    session.forfeitedById = forfeitingUserId;
+    session.winnerId = winnerId;
+
+    const berries = await this.rewardService.awardWin(winnerId, forfeitingUserId);
+    await this.statsService.recordMatch(session, berries);
+    this.sessionManager.removeSession(session.id);
+
+    const description = `🏳️ ${userMention(forfeitingUserId)} has **forfeited** the duel!\n\n**${userMention(winnerId)} wins by forfeit and earns 🍓 ${berries} Berries!**`;
+
+    await this.renderCombatState(interaction, session, description, true, winnerId);
+  }
+
   private buildCombatMessage(
     session: DuelSession,
     description: string,
     isGameOver: boolean,
     winnerId?: string,
   ) {
+    const isChallengerTurn = session.currentTurn === DuelTurn.CHALLENGER;
+    const currentTurnUserId = isChallengerTurn ? session.challenger.id : session.opponent.id;
+
     const embed = new EmbedBuilder()
-      .setTitle('⚔️ Duel!')
+      .setTitle(isGameOver ? '⚔️ Duel — Game Over' : '⚔️ Duel — Combat')
       .setDescription(description)
       .setColor(isGameOver ? (winnerId ? '#00FF00' : '#888888') : '#FFA500')
       .addFields(
         {
-          name: `🛡️ Challenger (<@${session.challenger.id}>)`,
-          value: `HP: ${session.challenger.hp}/${DUEL_CONSTANTS.MAX_HP}\nHeals: ${session.challenger.healsRemaining}`,
+          name: isGameOver ? '🛡️ Challenger' : isChallengerTurn ? '🛡️ Challenger 🟢' : '🛡️ Challenger ⏳',
+          value: `<@${session.challenger.id}>\n❤️ **HP:** ${session.challenger.hp}/${DUEL_CONSTANTS.MAX_HP}\n🧪 **Heals:** ${session.challenger.healsRemaining}`,
           inline: true,
         },
-        { name: 'VS', value: '⚡', inline: true },
+        { name: '⚡', value: '⚔️\n**VS**', inline: true },
         {
-          name: `🛡️ Opponent (<@${session.opponent.id}>)`,
-          value: `HP: ${session.opponent.hp}/${DUEL_CONSTANTS.MAX_HP}\nHeals: ${session.opponent.healsRemaining}`,
+          name: isGameOver ? '🛡️ Opponent' : !isChallengerTurn ? '🛡️ Opponent 🟢' : '🛡️ Opponent ⏳',
+          value: `<@${session.opponent.id}>\n❤️ **HP:** ${session.opponent.hp}/${DUEL_CONSTANTS.MAX_HP}\n🧪 **Heals:** ${session.opponent.healsRemaining}`,
           inline: true,
         },
       );
 
     if (!isGameOver) {
-      const currentTurnUserId =
-        session.currentTurn === DuelTurn.CHALLENGER ? session.challenger.id : session.opponent.id;
-      embed.addFields({ name: 'Current Turn', value: `<@${currentTurnUserId}>'s turn!`, inline: false });
+      embed.addFields({
+        name: '🎯 Active Turn',
+        value: `👉 **<@${currentTurnUserId}>**, it's your turn!`,
+        inline: false,
+      });
+      embed.setFooter({ text: '⚠️ Clicking an action when it is not your turn will be ignored.' });
     }
 
     const components = [];
@@ -369,6 +403,10 @@ export class DuelComponentHandler implements DiscordComponent {
           .setLabel(`Heal (${currentPlayerState.healsRemaining})`)
           .setStyle(ButtonStyle.Success)
           .setDisabled(currentPlayerState.healsRemaining <= 0),
+        new ButtonBuilder()
+          .setCustomId(`duel:forfeit:${session.id}`)
+          .setLabel('Forfeit')
+          .setStyle(ButtonStyle.Secondary),
       );
       components.push(row);
     }

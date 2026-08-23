@@ -60,10 +60,9 @@ export class DuelEngineService {
           mediaCategory = 'attack_miss';
           newHp = defender.hp; 
         } else {
-          // Base Damage
-          damage =
-            Math.floor(Math.random() * (DUEL_CONSTANTS.ATTACK_BASE_MAX - DUEL_CONSTANTS.ATTACK_BASE_MIN + 1)) +
-            DUEL_CONSTANTS.ATTACK_BASE_MIN;
+          // Tiered Base Damage Roll
+          const { damage: baseDamage, tier } = this.rollBaseDamage();
+          damage = baseDamage;
 
           // QTE Multiplier
           if (action.qteResult) {
@@ -77,6 +76,14 @@ export class DuelEngineService {
             subType = 'critical';
             textCategory = 'attack.critical';
             mediaCategory = 'attack_critical';
+          } else if (tier === 'ONE_HIT_KO') {
+            subType = 'critical';
+            textCategory = 'attack.one_hit_ko';
+            mediaCategory = 'attack_critical';
+          } else if (tier === 'MEGA_STRIKE') {
+            subType = 'strong';
+            textCategory = 'attack.mega';
+            mediaCategory = 'attack';
           } else {
             // Determine flavor text based on damage dealt
             if (damage < 15) {
@@ -135,6 +142,25 @@ export class DuelEngineService {
       textCategory,
       mediaCategory,
       isGameOver,
+    };
+  }
+
+  private rollBaseDamage(): { damage: number; tier: string } {
+    const roll = Math.random();
+    let cumulative = 0;
+
+    for (const tier of DUEL_CONSTANTS.DAMAGE_TIERS) {
+      cumulative += tier.chance;
+      if (roll <= cumulative) {
+        const damage =
+          Math.floor(Math.random() * (tier.max - tier.min + 1)) + tier.min;
+        return { damage, tier: tier.name };
+      }
+    }
+
+    return {
+      damage: Math.floor(Math.random() * 11) + 10,
+      tier: 'NORMAL',
     };
   }
 }

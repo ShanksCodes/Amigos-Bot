@@ -32,7 +32,7 @@ export class DuelStatisticsService {
           challengerId: session.challenger.id,
           opponentId: session.opponent.id,
           winnerId: session.winnerId,
-          mode: session.mode,
+          mode: session.state === 'FORFEITED' ? 'Forfeit' : session.mode,
           startedAt: session.startedAt,
           endedAt: new Date(),
           berriesAwarded,

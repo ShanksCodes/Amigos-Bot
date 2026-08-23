@@ -5,11 +5,11 @@ import { QteStrategy } from './qte.interface.js';
 export class ReactionTimeQte implements QteStrategy {
   readonly name = 'reaction_time';
 
-  // Configurable thresholds in milliseconds
-  private readonly PERFECT_MS = 300;
-  private readonly GOOD_MS = 600;
-  private readonly OKAY_MS = 1200;
-  private readonly FAIL_MS = 2000;
+  // Configurable thresholds in milliseconds (accounting for Discord latency)
+  private readonly PERFECT_MS = 800;
+  private readonly GOOD_MS = 1400;
+  private readonly OKAY_MS = 2200;
+  private readonly FAIL_MS = 3200;
 
   evaluate(interaction: ButtonInteraction, startTimeMs: number): QteResult {
     const reactionTimeMs = Date.now() - startTimeMs;
@@ -24,7 +24,7 @@ export class ReactionTimeQte implements QteStrategy {
 
     if (reactionTimeMs <= this.GOOD_MS) {
       return {
-        multiplier: 1.2,
+        multiplier: 1.25,
         reactionTimeMs,
         text: 'Great reaction!',
       };
@@ -40,7 +40,7 @@ export class ReactionTimeQte implements QteStrategy {
 
     if (reactionTimeMs <= this.FAIL_MS) {
       return {
-        multiplier: 0.8,
+        multiplier: 0.85,
         reactionTimeMs,
         text: 'A bit slow...',
       };
@@ -48,7 +48,7 @@ export class ReactionTimeQte implements QteStrategy {
 
     // Completely missed the window
     return {
-      multiplier: 0.5,
+      multiplier: 0.7,
       reactionTimeMs,
       text: 'Too slow!',
     };

@@ -101,7 +101,7 @@ export class DuelCommand implements DiscordCommand {
       .setDescription(`${userMention(challenger.id)} has challenged ${userMention(targetUser.id)} to a duel!`)
       .setColor('#FFA500')
       .addFields(
-        { name: 'Mode', value: 'Regular (Equal Stats, No Perks)', inline: true },
+        { name: 'Mode', value: 'Regular', inline: true },
         { name: 'Expires', value: `<t:${Math.floor(Date.now() / 1000) + 60}:R>`, inline: true }
       );
 
