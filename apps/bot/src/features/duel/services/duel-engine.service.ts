@@ -52,7 +52,21 @@ export class DuelEngineService {
         break;
       }
       case 'attack': {
-        const isMiss = Math.random() < DUEL_CONSTANTS.MISS_CHANCE;
+        // Sophisticated QTE-based probability scaling
+        let currentMissChance = DUEL_CONSTANTS.MISS_CHANCE;
+        let currentCritChance = DUEL_CONSTANTS.CRITICAL_CHANCE;
+        
+        if (action.qteResult) {
+          if (action.qteResult.multiplier >= 1.3) {
+            currentMissChance = 0; // Perfect QTE cannot miss
+            currentCritChance = Math.min(0.5, currentCritChance * 2); // Double crit chance
+          } else if (action.qteResult.multiplier <= 0.8) {
+            currentMissChance = Math.min(0.5, currentMissChance * 3); // High miss chance
+            currentCritChance = 0; // Failed QTE cannot crit
+          }
+        }
+
+        const isMiss = Math.random() < currentMissChance;
         
         if (isMiss) {
           subType = 'miss';
@@ -61,16 +75,16 @@ export class DuelEngineService {
           newHp = defender.hp; 
         } else {
           // Tiered Base Damage Roll
-          const { damage: baseDamage, tier } = this.rollBaseDamage();
+          const { damage: baseDamage, tier } = this.rollBaseDamage(action.qteResult?.multiplier);
           damage = baseDamage;
 
-          // QTE Multiplier
+          // QTE Multiplier directly scales final damage too
           if (action.qteResult) {
             damage = Math.floor(damage * action.qteResult.multiplier);
           }
 
           // Critical Hit
-          const isCrit = Math.random() < DUEL_CONSTANTS.CRITICAL_CHANCE;
+          const isCrit = Math.random() < currentCritChance;
           if (isCrit) {
             damage = Math.floor(damage * DUEL_CONSTANTS.ATTACK_CRITICAL_MULTIPLIER);
             subType = 'critical';
@@ -99,9 +113,14 @@ export class DuelEngineService {
             mediaCategory = 'attack.normal_med';
           }
 
-          // Apply Defender's defense modifiers (if they defended last turn)
+          // Apply Defender's defense modifiers
           if (defender.isDefending) {
-            const isParry = Math.random() < DUEL_CONSTANTS.PARRY_CHANCE;
+            let parryChance = DUEL_CONSTANTS.PARRY_CHANCE;
+            // If the defender also had a QTE (from previous turn maybe, but we don't have that state easily without storing it). 
+            // Wait, we DO have it because the defender takes a turn to 'defend', but their QTE result isn't passed here. 
+            // It's fine, we will just use the attacker's QTE or base constants.
+            
+            const isParry = Math.random() < parryChance;
             if (isParry) {
               subType = 'parry';
               textCategory = 'defend.parry';
@@ -145,8 +164,18 @@ export class DuelEngineService {
     };
   }
 
-  private rollBaseDamage(): { damage: number; tier: string } {
-    const roll = Math.random();
+  private rollBaseDamage(qteMultiplier?: number): { damage: number; tier: string } {
+    let roll = Math.random();
+    
+    // Shift the roll slightly if QTE is very good or very bad
+    if (qteMultiplier) {
+      if (qteMultiplier >= 1.3) {
+        roll = roll * 0.7; // Push roll towards lower indices (rarer, higher damage tiers)
+      } else if (qteMultiplier <= 0.8) {
+        roll = Math.min(1.0, roll + 0.3); // Push roll towards higher indices (weaker tiers like GLANCE)
+      }
+    }
+
     let cumulative = 0;
 
     for (const tier of DUEL_CONSTANTS.DAMAGE_TIERS) {

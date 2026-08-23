@@ -8,6 +8,11 @@ import { DuelSessionManager } from './services/duel-session.manager.js';
 import { DuelStatisticsService } from './services/duel-statistics.service.js';
 import { CommandRegistryService } from '../../discord/command-registry.service.js';
 import { ComponentRegistryService } from '../../discord/component-registry.service.js';
+import { QteRegistryService } from './qte/qte-registry.service.js';
+import { ReactionTimeQte } from './qte/reaction-time.qte.js';
+import { WeakSpotQte } from './qte/strategies/weak-spot.qte.js';
+import { PrecisionStrikeQte } from './qte/strategies/precision-strike.qte.js';
+import { DefensiveParryQte } from './qte/strategies/defensive-parry.qte.js';
 
 @Module({
   providers: [
@@ -16,6 +21,11 @@ import { ComponentRegistryService } from '../../discord/component-registry.servi
     DuelRewardService,
     DuelSessionManager,
     DuelStatisticsService,
+    QteRegistryService,
+    ReactionTimeQte,
+    WeakSpotQte,
+    PrecisionStrikeQte,
+    DefensiveParryQte,
     DuelCommand,
     DuelComponentHandler,
   ],

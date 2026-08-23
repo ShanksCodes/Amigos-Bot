@@ -16,12 +16,11 @@ import { DuelSessionManager } from '../services/duel-session.manager.js';
 import { DuelStatisticsService } from '../services/duel-statistics.service.js';
 import { DUEL_CONSTANTS } from '../domain/constants.js';
 import { DuelState, DuelTurn, CombatResult, DuelSession } from '../domain/types.js';
-import { ReactionTimeQte } from '../qte/reaction-time.qte.js';
+import { QteRegistryService } from '../qte/qte-registry.service.js';
 
 @Injectable()
 export class DuelComponentHandler implements DiscordComponent {
   private readonly logger = new Logger(DuelComponentHandler.name);
-  private readonly qte = new ReactionTimeQte();
 
   readonly customIdPrefix = 'duel:';
 
@@ -31,6 +30,7 @@ export class DuelComponentHandler implements DiscordComponent {
     private readonly mediaService: DuelMediaService,
     private readonly statsService: DuelStatisticsService,
     private readonly rewardService: DuelRewardService,
+    private readonly qteRegistry: QteRegistryService,
   ) {}
 
   async execute(interaction: MessageComponentInteraction): Promise<void> {
@@ -65,7 +65,14 @@ export class DuelComponentHandler implements DiscordComponent {
     }
 
     if (action === 'qte') {
-      await this.handleQte(interaction, session, parts[3], parseInt(parts[4], 10));
+      await this.handleQte(
+        interaction,
+        session,
+        parts[3], // actionType
+        parseInt(parts[4], 10), // qteStartTime
+        parts[5], // qteName
+        parts[6], // qtePayload
+      );
       return;
     }
 
@@ -114,26 +121,16 @@ export class DuelComponentHandler implements DiscordComponent {
     actionType: 'attack' | 'defend' | 'heal',
     session: DuelSession,
   ): Promise<void> {
-    if (actionType === 'defend' || actionType === 'heal') {
+    if (actionType === 'heal') {
       const result = this.engineService.processAction(session, { type: actionType });
       await this.applyCombatResult(interaction, session, result);
     } else {
-      // Trigger QTE for Attack
+      // Trigger QTE for Attack or Defend
       const qteStartTime = Date.now();
+      const qteStrategy = this.qteRegistry.getRandomQte(actionType);
+      const qtePrompt = qteStrategy.generatePrompt(session.id, actionType, qteStartTime);
 
-      const qteEmbed = new EmbedBuilder()
-        .setTitle('⚡ Quick Time Event!')
-        .setDescription('Click the button as fast as possible to boost your attack!')
-        .setColor('#FFFF00');
-
-      const qteRow = new ActionRowBuilder<ButtonBuilder>().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`duel:qte:${session.id}:${actionType}:${qteStartTime}`)
-          .setLabel('STRIKE!')
-          .setStyle(ButtonStyle.Danger),
-      );
-
-      await interaction.update({ embeds: [qteEmbed], components: [qteRow] });
+      await interaction.update({ embeds: [qtePrompt.embed], components: qtePrompt.components });
 
       // If they don't click within 5 seconds, auto-fail QTE
       this.sessionManager.scheduleTimeout(session.id, 5000, async () => {
@@ -201,6 +198,8 @@ export class DuelComponentHandler implements DiscordComponent {
     session: DuelSession,
     actionType: string,
     startTime: number,
+    qteName: string,
+    qtePayload?: string,
   ): Promise<void> {
     const currentTurnUserId =
       session.currentTurn === DuelTurn.CHALLENGER ? session.challenger.id : session.opponent.id;
@@ -211,7 +210,16 @@ export class DuelComponentHandler implements DiscordComponent {
 
     this.sessionManager.clearTimeout(session.id);
 
-    const qteResult = this.qte.evaluate(interaction, startTime);
+    const qteStrategy = this.qteRegistry.getStrategy(qteName);
+    if (!qteStrategy) {
+      this.logger.warn(`QTE strategy ${qteName} not found, falling back to basic evaluation.`);
+    }
+
+    // Default to a 1.0 multiplier if strategy is missing
+    const qteResult = qteStrategy
+      ? qteStrategy.evaluate(interaction, startTime, qtePayload)
+      : { multiplier: 1.0, reactionTimeMs: Date.now() - startTime, text: 'QTE Error fallback' };
+
     const result = this.engineService.processAction(session, {
       type: actionType as 'attack' | 'defend' | 'heal',
       qteResult,

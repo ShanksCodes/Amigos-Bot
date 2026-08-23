@@ -1,7 +1,9 @@
-import { ButtonInteraction } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder } from 'discord.js';
+import { Injectable } from '@nestjs/common';
 import { QteResult } from '../domain/types.js';
-import { QteStrategy } from './qte.interface.js';
+import { QtePromptData, QteStrategy } from './qte.interface.js';
 
+@Injectable()
 export class ReactionTimeQte implements QteStrategy {
   readonly name = 'reaction_time';
 
@@ -11,7 +13,23 @@ export class ReactionTimeQte implements QteStrategy {
   private readonly OKAY_MS = 2200;
   private readonly FAIL_MS = 3200;
 
-  evaluate(interaction: ButtonInteraction, startTimeMs: number): QteResult {
+  generatePrompt(sessionId: string, actionType: string, startTimeMs: number): QtePromptData {
+    const embed = new EmbedBuilder()
+      .setTitle('⚡ Quick Time Event!')
+      .setDescription('Click the button as fast as possible to boost your attack!')
+      .setColor('#FFFF00');
+
+    const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`duel:qte:${sessionId}:${actionType}:${startTimeMs}:${this.name}:none`)
+        .setLabel('STRIKE!')
+        .setStyle(ButtonStyle.Danger),
+    );
+
+    return { embed, components: [row] };
+  }
+
+  evaluate(interaction: ButtonInteraction, startTimeMs: number, payload?: string): QteResult {
     const reactionTimeMs = Date.now() - startTimeMs;
 
     if (reactionTimeMs <= this.PERFECT_MS) {

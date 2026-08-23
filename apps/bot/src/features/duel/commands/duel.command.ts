@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import {
   ActionRowBuilder,
@@ -99,7 +100,7 @@ export class DuelCommand implements DiscordCommand {
     const matchesToday = await this.rewardService.getPairMatchCountToday(challenger.id, targetUser.id);
     const isRanked = matchesToday < DUEL_CONSTANTS.MAX_RANKED_MATCHES_PER_PAIR_DAILY;
 
-    const sessionId = `${challenger.id}-${targetUser.id}-${Date.now()}`;
+    const sessionId = randomBytes(6).toString('hex');
     const session = this.sessionManager.createSession(sessionId, challenger.id, targetUser.id, {
       mode: 'Regular',
       isRanked,
