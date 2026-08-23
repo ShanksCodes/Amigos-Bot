@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "ES2022",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "#app/database": [
+        "./libs/database/src/index.js"
+      ],
+      "#app/database/*": [
+        "./libs/database/src/*.js"
+      ],
+      "#app/config": [
+        "./libs/config/src/index.js"
+      ],
+      "#app/config/*": [
+        "./libs/config/src/*.js"
+      ],
+      "#app/logging": [
+        "./libs/logging/src/index.js"
+      ],
+      "#app/logging/*": [
+        "./libs/logging/src/*.js"
+      ],
+      "#app/common": [
+        "./libs/common/src/index.js"
+      ],
+      "#app/common/*": [
+        "./libs/common/src/*.js"
+      ]
+    }
+  }
+}

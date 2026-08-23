@@ -1,0 +1,75 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: amigos-bot
+
+    env_file:
+      - .env
+
+    environment:
+      DATABASE_URL: postgresql://amigos:amigos3895_4619@postgres:5432/amigos_db
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    develop:
+      watch:
+        - action: sync
+          path: ./apps
+          target: /app/apps
+          initial_sync: true
+
+        - action: sync
+          path: ./libs
+          target: /app/libs
+          initial_sync: true
+
+        - action: sync
+          path: ./prisma
+          target: /app/prisma
+          initial_sync: true
+
+        - action: sync
+          path: ./tools
+          target: /app/tools
+          initial_sync: true
+
+        - action: rebuild
+          path: ./package.json
+
+        - action: rebuild
+          path: ./pnpm-lock.yaml
+
+        - action: rebuild
+          path: ./pnpm-workspace.yaml
+
+  postgres:
+    image: pgvector/pgvector:pg17
+
+    container_name: amigos-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: amigos
+      POSTGRES_PASSWORD: amigos3895_4619
+      POSTGRES_DB: amigos_db
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - amigos_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U amigos -d amigos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  amigos_postgres_data:

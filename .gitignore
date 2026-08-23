@@ -1,14 +1,52 @@
+# ============================================================
+# Dependencies
+# ============================================================
 node_modules/
-dist/
+.pnpm-store/
 
+# ============================================================
+# Build Outputs & TypeScript Cache
+# ============================================================
+dist/
+*.tsbuildinfo
+
+# ============================================================
+# Generated Prisma Client
+# Note: prisma/migrations/ IS tracked in Git, but generated/ is ignored
+# ============================================================
+generated/
+
+# ============================================================
+# Environment & Secrets (NEVER COMMIT REAL SECRETS)
+# ============================================================
 .env
 .env.*
+.env.local
+.env.production
 !.env.example
 
-coverage/
+# ============================================================
+# Logs
+# ============================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
+# ============================================================
+# Testing & Coverage
+# ============================================================
+coverage/
+.nyc_output/
+
+# ============================================================
+# OS & Editor Specific Files
+# ============================================================
 .DS_Store
 Thumbs.db
-
 .idea/
-.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

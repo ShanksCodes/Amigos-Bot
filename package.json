@@ -1,7 +1,18 @@
 {
   "name": "amigos-bot",
+  "type": "module",
   "version": "1.0.0",
   "private": true,
+  "imports": {
+    "#app/database": "./dist/apps/bot/libs/database/src/index.js",
+    "#app/database/*": "./dist/apps/bot/libs/database/src/*.js",
+    "#app/config": "./dist/apps/bot/libs/config/src/index.js",
+    "#app/config/*": "./dist/apps/bot/libs/config/src/*.js",
+    "#app/logging": "./dist/apps/bot/libs/logging/src/index.js",
+    "#app/logging/*": "./dist/apps/bot/libs/logging/src/*.js",
+    "#app/common": "./dist/apps/bot/libs/common/src/index.js",
+    "#app/common/*": "./dist/apps/bot/libs/common/src/*.js"
+  },
   "scripts": {
     "build": "nest build",
     "start": "nest start",
@@ -38,6 +49,6 @@
     "prettier": "^3.9.6",
     "prisma": "^7.9.1",
     "tsx": "^4.23.12",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }
