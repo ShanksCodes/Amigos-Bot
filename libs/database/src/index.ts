@@ -1,3 +1,3 @@
-export * from './database.module';
-export * from './prisma.service';
-export * from '../../../generated/prisma/client';
+export * from './database.module.js';
+export * from './prisma.service.js';
+export * from '@prisma/client';

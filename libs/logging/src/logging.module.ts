@@ -1,7 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
-import { createWinstonLoggerOptions, WinstonLoggerOptions } from './winston.config';
-import { AppLoggerService } from './logger.service';
+import { createWinstonLoggerOptions, WinstonLoggerOptions } from './winston.config.js';
+import { AppLoggerService } from './logger.service.js';
 
 @Global()
 @Module({})

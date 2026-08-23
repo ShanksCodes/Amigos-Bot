@@ -10,8 +10,9 @@ import {
   Events,
   GatewayIntentBits,
 } from 'discord.js';
-import { DiscordIdentityService } from './discord-identity.service';
-import { InteractionRouterService } from './interaction-router.service';
+import { getErrorMessage, getErrorStack } from '@app/common';
+import { DiscordIdentityService } from './discord-identity.service.js';
+import { InteractionRouterService } from './interaction-router.service.js';
 
 @Injectable()
 export class DiscordClientService
@@ -51,7 +52,10 @@ export class DiscordClientService
         }
         this.logger.log(`Synced ${syncedCount} guild(s) on startup`);
       } catch (error) {
-        this.logger.error(`Error syncing guilds on startup: ${error.message}`, error.stack);
+        this.logger.error(
+          `Error syncing guilds on startup: ${getErrorMessage(error)}`,
+          getErrorStack(error),
+        );
       }
     });
 
@@ -60,7 +64,10 @@ export class DiscordClientService
       try {
         await this.identityService.syncGuild(guild);
       } catch (error) {
-        this.logger.error(`Error syncing joined guild ${guild.id}: ${error.message}`, error.stack);
+        this.logger.error(
+          `Error syncing joined guild ${guild.id}: ${getErrorMessage(error)}`,
+          getErrorStack(error),
+        );
       }
     });
 
@@ -69,8 +76,8 @@ export class DiscordClientService
         await this.identityService.syncGuildMember(member);
       } catch (error) {
         this.logger.error(
-          `Error syncing added member ${member.user.id} in guild ${member.guild.id}: ${error.message}`,
-          error.stack,
+          `Error syncing added member ${member.user.id} in guild ${member.guild.id}: ${getErrorMessage(error)}`,
+          getErrorStack(error),
         );
       }
     });
@@ -80,8 +87,8 @@ export class DiscordClientService
         await this.identityService.markGuildMemberLeft(member);
       } catch (error) {
         this.logger.error(
-          `Error marking member ${member.user?.id} left in guild ${member.guild.id}: ${error.message}`,
-          error.stack,
+          `Error marking member ${member.user?.id} left in guild ${member.guild.id}: ${getErrorMessage(error)}`,
+          getErrorStack(error),
         );
       }
     });
@@ -91,8 +98,8 @@ export class DiscordClientService
         await this.interactionRouter.handleInteraction(interaction);
       } catch (error) {
         this.logger.error(
-          `Unhandled interaction router error: ${error.message}`,
-          error.stack,
+          `Unhandled interaction router error: ${getErrorMessage(error)}`,
+          getErrorStack(error),
         );
       }
     });
@@ -104,7 +111,10 @@ export class DiscordClientService
       this.logger.log('Logging in to Discord...');
       await this.client.login(token);
     } catch (error) {
-      this.logger.error(`Failed to login to Discord: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to login to Discord: ${getErrorMessage(error)}`,
+        getErrorStack(error),
+      );
       throw error;
     }
   }

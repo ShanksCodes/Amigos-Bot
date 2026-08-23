@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GuildMember, Interaction } from 'discord.js';
-import { CommandRegistryService } from './command-registry.service';
-import { DiscordIdentityService } from './discord-identity.service';
+import { getErrorMessage, getErrorStack } from '@app/common';
+import { CommandRegistryService } from './command-registry.service.js';
+import { DiscordIdentityService } from './discord-identity.service.js';
 
 @Injectable()
 export class InteractionRouterService {
@@ -62,8 +63,8 @@ export class InteractionRouterService {
       await command.execute(interaction);
     } catch (error) {
       this.logger.error(
-        `Error executing command /${interaction.commandName}: ${error.message}`,
-        error.stack,
+        `Error executing command /${interaction.commandName}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
 
       if (interaction.isRepliable()) {

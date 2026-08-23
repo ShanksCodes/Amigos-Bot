@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ChatInputCommandInteraction, SlashCommandBuilder } from 'discord.js';
-import { DiscordCommand } from '../../../discord/types/discord-command.interface';
+import { DiscordCommand } from '../../../discord/types/discord-command.interface.js';
 
 @Injectable()
 export class PingCommand implements DiscordCommand {

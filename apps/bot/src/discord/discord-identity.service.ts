@@ -6,6 +6,7 @@ import {
   User as DiscordUser,
 } from 'discord.js';
 import { PrismaService } from '@app/database';
+import { getErrorMessage, getErrorStack } from '@app/common';
 
 export type SyncGuildInput =
   | DiscordGuild
@@ -60,7 +61,10 @@ export class DiscordIdentityService {
         },
       });
     } catch (error) {
-      this.logger.error(`Failed to sync guild ${guild.id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to sync guild ${guild.id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
+      );
       throw error;
     }
   }
@@ -82,7 +86,10 @@ export class DiscordIdentityService {
         },
       });
     } catch (error) {
-      this.logger.error(`Failed to sync user ${user.id}: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to sync user ${user.id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
+      );
       throw error;
     }
   }
@@ -121,8 +128,8 @@ export class DiscordIdentityService {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to sync guild member ${member.user.id} in guild ${member.guild.id}: ${error.message}`,
-        error.stack,
+        `Failed to sync guild member ${member.user.id} in guild ${member.guild.id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       throw error;
     }
@@ -156,8 +163,8 @@ export class DiscordIdentityService {
       });
     } catch (error) {
       this.logger.error(
-        `Failed to mark guild member ${member.user?.id} as left in guild ${member.guild.id}: ${error.message}`,
-        error.stack,
+        `Failed to mark guild member ${member.user?.id} as left in guild ${member.guild.id}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
       );
       throw error;
     }

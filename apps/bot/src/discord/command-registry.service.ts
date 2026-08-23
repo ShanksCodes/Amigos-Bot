@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DiscordCommand } from './types/discord-command.interface';
+import { DiscordCommand } from './types/discord-command.interface.js';
 
 @Injectable()
 export class CommandRegistryService {

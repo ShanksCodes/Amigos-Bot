@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "declaration": false,
-    "outDir": "../../dist/apps/bot"
+    "outDir": "../../dist/apps/bot",
+    "rootDir": "../.."
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

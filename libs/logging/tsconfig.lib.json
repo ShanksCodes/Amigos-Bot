@@ -4,5 +4,7 @@
     "declaration": true,
     "outDir": "../../dist/libs/logging"
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { WinstonModule, createWinstonLoggerOptions } from '@app/logging';
-import { BotModule } from './bot.module';
+import { BotModule } from './bot.module.js';
 
 async function bootstrap() {
   const winstonLogger = WinstonModule.createLogger(

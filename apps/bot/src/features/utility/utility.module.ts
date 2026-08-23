@@ -1,6 +1,6 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { CommandRegistryService } from '../../discord/command-registry.service';
-import { PingCommand } from './commands/ping.command';
+import { CommandRegistryService } from '../../discord/command-registry.service.js';
+import { PingCommand } from './commands/ping.command.js';
 
 @Module({
   providers: [PingCommand],

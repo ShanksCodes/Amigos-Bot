@@ -1,9 +1,9 @@
 import { Global, Module } from '@nestjs/common';
 import { DatabaseModule } from '@app/database';
-import { DiscordClientService } from './discord-client.service';
-import { CommandRegistryService } from './command-registry.service';
-import { InteractionRouterService } from './interaction-router.service';
-import { DiscordIdentityService } from './discord-identity.service';
+import { DiscordClientService } from './discord-client.service.js';
+import { CommandRegistryService } from './command-registry.service.js';
+import { InteractionRouterService } from './interaction-router.service.js';
+import { DiscordIdentityService } from './discord-identity.service.js';
 
 @Global()
 @Module({
