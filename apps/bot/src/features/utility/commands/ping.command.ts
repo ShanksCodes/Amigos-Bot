@@ -9,13 +9,15 @@ export class PingCommand implements DiscordCommand {
     .setDescription('Replies with Pong and latency statistics.');
 
   async execute(interaction: ChatInputCommandInteraction): Promise<void> {
-    const sent = await interaction.reply({
+    const response = await interaction.reply({
       content: 'Pinging...',
-      fetchReply: true,
+      withResponse: true,
     });
 
-    const roundtripLatency =
-      sent.createdTimestamp - interaction.createdTimestamp;
+    const sentMessage = response.resource?.message;
+    const roundtripLatency = sentMessage
+      ? sentMessage.createdTimestamp - interaction.createdTimestamp
+      : Date.now() - interaction.createdTimestamp;
     const wsPing = interaction.client.ws.ping;
 
     await interaction.editReply(
