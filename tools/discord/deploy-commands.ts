@@ -1,6 +1,11 @@
-import 'dotenv/config';
 import { Logger } from '@nestjs/common';
 import { REST, Routes, SlashCommandBuilder } from 'discord.js';
+
+try {
+  process.loadEnvFile();
+} catch {
+  // Ignored if .env does not exist or env vars already provided
+}
 
 const logger = new Logger('DeployCommands');
 
@@ -8,6 +13,36 @@ const commands = [
   new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong and latency statistics.'),
+  new SlashCommandBuilder()
+    .setName('duel')
+    .setDescription('Duel commands')
+    .addSubcommand(sub =>
+      sub
+        .setName('challenge')
+        .setDescription('Challenge another user to a duel')
+        .addUserOption(opt =>
+          opt
+            .setName('user')
+            .setDescription('The user to challenge')
+            .setRequired(true)
+        )
+    )
+    .addSubcommand(sub =>
+      sub
+        .setName('stats')
+        .setDescription('View your or another user\'s duel stats')
+        .addUserOption(opt =>
+          opt
+            .setName('user')
+            .setDescription('The user to view stats for')
+            .setRequired(false)
+        )
+    )
+    .addSubcommand(sub =>
+      sub
+        .setName('leaderboard')
+        .setDescription('View the duel leaderboard')
+    ),
 ].map((command) => command.toJSON());
 
 const token = process.env.DISCORD_TOKEN;
@@ -22,6 +57,7 @@ if (!token || !clientId) {
 const rest = new REST({ version: '10' }).setToken(token);
 
 async function deploy() {
+  const validClientId = clientId as string;
   try {
     logger.log(
       `Started refreshing ${commands.length} application (/) command(s).`,
@@ -29,14 +65,14 @@ async function deploy() {
 
     if (guildId) {
       const data = (await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
+        Routes.applicationGuildCommands(validClientId, guildId),
         { body: commands },
       )) as unknown[];
       logger.log(
         `Successfully reloaded ${data.length} guild (/) command(s) for guild ${guildId}.`,
       );
     } else {
-      const data = (await rest.put(Routes.applicationCommands(clientId), {
+      const data = (await rest.put(Routes.applicationCommands(validClientId), {
         body: commands,
       })) as unknown[];
       logger.log(

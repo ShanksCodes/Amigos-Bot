@@ -14,6 +14,10 @@ model User {
 
   profile      UserProfile?
   guildMembers GuildMember[]
+  duelProfile  DuelProfile?
+  duelsChallenged DuelHistory[] @relation("DuelChallenger")
+  duelsDefended   DuelHistory[] @relation("DuelOpponent")
+  duelsWon        DuelHistory[] @relation("DuelWinner")
 }
 
 model UserProfile {
@@ -54,4 +58,39 @@ model GuildMember {
   @@unique([guildId, userId])
   @@index([userId])
   @@index([guildId])
+}
+
+model DuelProfile {
+  userId           String @id
+  matchesPlayed    Int    @default(0)
+  wins             Int    @default(0)
+  losses           Int    @default(0)
+  currentWinStreak Int    @default(0)
+  bestWinStreak    Int    @default(0)
+  totalDamageDealt Int    @default(0)
+  totalDamageTaken Int    @default(0)
+  totalHealing     Int    @default(0)
+  criticalHits     Int    @default(0)
+  parries          Int    @default(0)
+  fastestReaction  Int?   
+  totalBerries     Int    @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user             User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DuelHistory {
+  id             String   @id @default(uuid())
+  challengerId   String
+  opponentId     String
+  winnerId       String?  
+  mode           String   @default("Regular")
+  startedAt      DateTime @default(now())
+  endedAt        DateTime
+  berriesAwarded Int      @default(0)
+
+  challenger     User     @relation("DuelChallenger", fields: [challengerId], references: [id])
+  opponent       User     @relation("DuelOpponent", fields: [opponentId], references: [id])
+  winner         User?    @relation("DuelWinner", fields: [winnerId], references: [id])
 }
