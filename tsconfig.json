@@ -18,33 +18,30 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-  "@app/database": [
-    "./libs/database/src/index.ts"
-  ],
-  "@app/database/*": [
-    "./libs/database/src/*"
-  ],
-
-  "@app/config": [
-    "./libs/config/src/index.ts"
-  ],
-  "@app/config/*": [
-    "./libs/config/src/*"
-  ],
-
-  "@app/logging": [
-    "./libs/logging/src/index.ts"
-  ],
-  "@app/logging/*": [
-    "./libs/logging/src/*"
-  ],
-
-  "@app/common": [
-    "./libs/common/src/index.ts"
-  ],
-  "@app/common/*": [
-    "./libs/common/src/*"
-  ]
-}
+      "#app/database": [
+        "./libs/database/src/index.js"
+      ],
+      "#app/database/*": [
+        "./libs/database/src/*.js"
+      ],
+      "#app/config": [
+        "./libs/config/src/index.js"
+      ],
+      "#app/config/*": [
+        "./libs/config/src/*.js"
+      ],
+      "#app/logging": [
+        "./libs/logging/src/index.js"
+      ],
+      "#app/logging/*": [
+        "./libs/logging/src/*.js"
+      ],
+      "#app/common": [
+        "./libs/common/src/index.js"
+      ],
+      "#app/common/*": [
+        "./libs/common/src/*.js"
+      ]
+    }
   }
 }

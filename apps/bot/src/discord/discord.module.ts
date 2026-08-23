@@ -1,5 +1,5 @@
 import { Global, Module } from '@nestjs/common';
-import { DatabaseModule } from '@app/database';
+import { DatabaseModule } from '#app/database';
 import { DiscordClientService } from './discord-client.service.js';
 import { CommandRegistryService } from './command-registry.service.js';
 import { InteractionRouterService } from './interaction-router.service.js';

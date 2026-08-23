@@ -5,8 +5,8 @@ import {
   PartialGuildMember,
   User as DiscordUser,
 } from 'discord.js';
-import { PrismaService } from '@app/database';
-import { getErrorMessage, getErrorStack } from '@app/common';
+import { PrismaService } from '#app/database';
+import { getErrorMessage, getErrorStack } from '#app/common';
 
 export type SyncGuildInput =
   | DiscordGuild

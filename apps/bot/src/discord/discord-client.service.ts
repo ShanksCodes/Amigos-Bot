@@ -10,7 +10,7 @@ import {
   Events,
   GatewayIntentBits,
 } from 'discord.js';
-import { getErrorMessage, getErrorStack } from '@app/common';
+import { getErrorMessage, getErrorStack } from '#app/common';
 import { DiscordIdentityService } from './discord-identity.service.js';
 import { InteractionRouterService } from './interaction-router.service.js';
 

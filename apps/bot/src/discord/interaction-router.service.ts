@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { GuildMember, Interaction } from 'discord.js';
-import { getErrorMessage, getErrorStack } from '@app/common';
+import { getErrorMessage, getErrorStack } from '#app/common';
 import { CommandRegistryService } from './command-registry.service.js';
 import { DiscordIdentityService } from './discord-identity.service.js';
 
