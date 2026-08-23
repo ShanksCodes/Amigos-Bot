@@ -282,11 +282,9 @@ export class DuelComponentHandler implements DiscordComponent {
       this.sessionManager.removeSession(session.id);
 
       if (berries > 0) {
-        description += `\n\n**${userMention(session.winnerId)} wins the duel and earns 🍓 ${berries} Berries!**`;
-      } else if (!session.isRanked) {
-        description += `\n\n**${userMention(session.winnerId)} wins the duel!** *(Friendly Match — Daily limit reached)*`;
+        description += `\n\n🏆 **${userMention(session.winnerId)} wins the duel and earns 🍓 ${berries} Berries!**`;
       } else {
-        description += `\n\n**${userMention(session.winnerId)} wins the duel!**`;
+        description += `\n\n🏆 **${userMention(session.winnerId)} wins the duel!**`;
       }
     } else {
       session.turnsPlayed += 1;
@@ -326,7 +324,7 @@ export class DuelComponentHandler implements DiscordComponent {
         this.sessionManager.removeSession(session.id);
 
         const rewardText = berries > 0 ? ` and earns 🍓 ${berries} Berries!` : '!';
-        const timeoutDesc = `*Turn timeout!*\n${userMention(loser.id)} took too long to move.\n\n**${userMention(winner.id)} wins by default${rewardText}**`;
+        const timeoutDesc = `*Turn timeout!*\n${userMention(loser.id)} took too long to move.\n\n🏆 **${userMention(winner.id)} wins by default${rewardText}**`;
 
         await interaction
           .editReply(this.buildCombatMessage(session, timeoutDesc, true, winner.id))
@@ -355,11 +353,9 @@ export class DuelComponentHandler implements DiscordComponent {
 
     let description = `🏳️ ${userMention(forfeitingUserId)} has **forfeited** the duel!\n\n`;
     if (berries > 0) {
-      description += `**${userMention(winnerId)} wins by forfeit and earns 🍓 ${berries} Berries!**`;
-    } else if (!session.isRanked) {
-      description += `**${userMention(winnerId)} wins by forfeit!** *(Friendly Match — Daily limit reached)*`;
+      description += `🏆 **${userMention(winnerId)} wins by forfeit and earns 🍓 ${berries} Berries!**`;
     } else {
-      description += `**${userMention(winnerId)} wins by forfeit!** *(No Berries awarded for instant forfeit)*`;
+      description += `🏆 **${userMention(winnerId)} wins by forfeit!**`;
     }
 
     await this.renderCombatState(interaction, session, description, true, winnerId);
@@ -375,30 +371,35 @@ export class DuelComponentHandler implements DiscordComponent {
     const currentTurnUserId = isChallengerTurn ? session.challenger.id : session.opponent.id;
 
     const embed = new EmbedBuilder()
-      .setTitle(isGameOver ? '⚔️ Duel — Game Over' : '⚔️ Duel — Combat')
+      .setTitle(isGameOver ? '⚔️ Duel: Game Over' : '⚔️ Duel')
       .setDescription(description)
       .setColor(isGameOver ? (winnerId ? '#00FF00' : '#888888') : '#FFA500')
       .addFields(
         {
           name: isGameOver ? '🛡️ Challenger' : isChallengerTurn ? '🛡️ Challenger 🟢' : '🛡️ Challenger ⏳',
-          value: `<@${session.challenger.id}>\n❤️ **HP:** ${session.challenger.hp}/${DUEL_CONSTANTS.MAX_HP}\n🧪 **Heals:** ${session.challenger.healsRemaining}`,
+          value: `<@${session.challenger.id}>\n\n❤️ **HP:** \`${session.challenger.hp} / ${DUEL_CONSTANTS.MAX_HP}\`\n🧪 **Heals:** \`${session.challenger.healsRemaining}\``,
           inline: true,
         },
-        { name: '⚡', value: '⚔️\n**VS**', inline: true },
+        { name: '⚡', value: '\n⚔️\n**VS**', inline: true },
         {
           name: isGameOver ? '🛡️ Opponent' : !isChallengerTurn ? '🛡️ Opponent 🟢' : '🛡️ Opponent ⏳',
-          value: `<@${session.opponent.id}>\n❤️ **HP:** ${session.opponent.hp}/${DUEL_CONSTANTS.MAX_HP}\n🧪 **Heals:** ${session.opponent.healsRemaining}`,
+          value: `<@${session.opponent.id}>\n\n❤️ **HP:** \`${session.opponent.hp} / ${DUEL_CONSTANTS.MAX_HP}\`\n🧪 **Heals:** \`${session.opponent.healsRemaining}\``,
           inline: true,
         },
       );
 
     if (!isGameOver) {
       embed.addFields({
-        name: '🎯 Active Turn',
+        name: '\u200B\n🎯 Active Turn',
         value: `👉 **<@${currentTurnUserId}>**, it's your turn!`,
         inline: false,
       });
-      embed.setFooter({ text: '⚠️ Clicking an action when it is not your turn will be ignored.' });
+    }
+
+    if (!session.isRanked) {
+      embed.setFooter({
+        text: 'Daily Limit Reached: You have already played 3 matches against this opponent today. This match will be unrecorded.',
+      });
     }
 
     const components = [];

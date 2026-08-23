@@ -8,15 +8,20 @@ export class DuelSessionManager {
   private readonly timeouts = new Map<string, NodeJS.Timeout>();
   private readonly logger = new Logger(DuelSessionManager.name);
 
-  createSession(id: string, challengerId: string, opponentId: string, isRanked: boolean = true): DuelSession {
+  createSession(
+    id: string,
+    challengerId: string,
+    opponentId: string,
+    options: { mode?: string; isRanked?: boolean } = {},
+  ): DuelSession {
     const session: DuelSession = {
       id,
       challenger: { id: challengerId, hp: DUEL_CONSTANTS.MAX_HP, healsRemaining: DUEL_CONSTANTS.MAX_HEALS, isDefending: false },
       opponent: { id: opponentId, hp: DUEL_CONSTANTS.MAX_HP, healsRemaining: DUEL_CONSTANTS.MAX_HEALS, isDefending: false },
       state: DuelState.PENDING,
       currentTurn: DuelTurn.CHALLENGER,
-      mode: 'Regular',
-      isRanked,
+      mode: options.mode ?? 'Regular',
+      isRanked: options.isRanked ?? true,
       turnsPlayed: 0,
       startedAt: new Date(),
       lastActionAt: new Date(),

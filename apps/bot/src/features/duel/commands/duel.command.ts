@@ -100,20 +100,27 @@ export class DuelCommand implements DiscordCommand {
     const isRanked = matchesToday < DUEL_CONSTANTS.MAX_RANKED_MATCHES_PER_PAIR_DAILY;
 
     const sessionId = `${challenger.id}-${targetUser.id}-${Date.now()}`;
-    this.sessionManager.createSession(sessionId, challenger.id, targetUser.id, isRanked);
-
-    const modeDisplay = isRanked
-      ? `Regular (Ranked • ${matchesToday + 1}/${DUEL_CONSTANTS.MAX_RANKED_MATCHES_PER_PAIR_DAILY})`
-      : 'Regular (Friendly • Daily limit reached)';
+    const session = this.sessionManager.createSession(sessionId, challenger.id, targetUser.id, {
+      mode: 'Regular',
+      isRanked,
+    });
 
     const embed = new EmbedBuilder()
       .setTitle('⚔️ Duel Challenge!')
       .setDescription(`${userMention(challenger.id)} has challenged ${userMention(targetUser.id)} to a duel!`)
       .setColor('#FFA500')
       .addFields(
-        { name: 'Mode', value: modeDisplay, inline: true },
+        { name: 'Mode', value: session.mode, inline: true },
         { name: 'Expires', value: `<t:${Math.floor(Date.now() / 1000) + 60}:R>`, inline: true }
       );
+
+    if (!isRanked) {
+      embed.addFields({
+        name: '\u200B\nℹ️ Note',
+        value: '\nDaily Limit Reached: You have already played 3 matches against this opponent today. This match will be unrecorded.',
+        inline: false,
+      });
+    }
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       new ButtonBuilder().setCustomId(`duel:accept:${sessionId}`).setLabel('Accept').setStyle(ButtonStyle.Success),
