@@ -43,6 +43,12 @@ const commands = [
         .setName('leaderboard')
         .setDescription('View the duel leaderboard')
     ),
+  new SlashCommandBuilder()
+    .setName('dadjoke')
+    .setDescription('Tells a random dad joke!'),
+  new SlashCommandBuilder()
+    .setName('joke')
+    .setDescription('Tells a random joke from JokeAPI!'),
 ].map((command) => command.toJSON());
 
 const token = process.env.DISCORD_TOKEN;

@@ -5,6 +5,7 @@ import { LoggingModule } from '#app/logging';
 import { DiscordModule } from './discord/discord.module.js';
 import { UtilityModule } from './features/utility/utility.module.js';
 import { DuelModule } from './features/duel/duel.module.js';
+import { FunModule } from './features/fun/fun.module.js';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DuelModule } from './features/duel/duel.module.js';
     DiscordModule,
     UtilityModule,
     DuelModule,
+    FunModule,
   ],
 })
 export class BotModule {}
