@@ -49,6 +49,13 @@ const commands = [
   new SlashCommandBuilder()
     .setName('joke')
     .setDescription('Tells a random joke from JokeAPI!'),
+  new SlashCommandBuilder()
+    .setName('birthday')
+    .setDescription('Manage your personal birthday and timezone settings'),
+  new SlashCommandBuilder()
+    .setName('settings')
+    .setDescription('Configure server settings (Admins only)')
+    .setDefaultMemberPermissions(8), // 8 is ManageGuild permission bit
 ].map((command) => command.toJSON());
 
 const token = process.env.DISCORD_TOKEN;

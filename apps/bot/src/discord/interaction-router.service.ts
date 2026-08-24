@@ -19,7 +19,7 @@ export class InteractionRouterService {
     try {
       if (interaction.isChatInputCommand()) {
         await this.handleChatInputCommand(interaction);
-      } else if (interaction.isMessageComponent()) {
+      } else if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
         await this.handleMessageComponent(interaction);
       }
     } catch (error) {
@@ -69,7 +69,7 @@ export class InteractionRouterService {
   }
 
   private async handleMessageComponent(interaction: Interaction): Promise<void> {
-    if (!interaction.isMessageComponent()) return;
+    if (!interaction.isMessageComponent() && !interaction.isModalSubmit()) return;
 
     // Centrally ensure/sync identity before component execution
     await this.syncIdentity(interaction);
