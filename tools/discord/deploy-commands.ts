@@ -56,6 +56,51 @@ const commands = [
     .setName('settings')
     .setDescription('Configure server settings (Admins only)')
     .setDefaultMemberPermissions(8), // 8 is ManageGuild permission bit
+  new SlashCommandBuilder()
+    .setName('notes')
+    .setDescription('Manage your private personal notes')
+    .addSubcommand((sub) =>
+      sub.setName('add').setDescription('Create a new private personal note'),
+    )
+    .addSubcommand((sub) =>
+      sub.setName('list').setDescription('List all your private personal notes'),
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('view')
+        .setDescription('View a private personal note')
+        .addIntegerOption((opt) =>
+          opt
+            .setName('number')
+            .setDescription('The note number from /notes list')
+            .setRequired(true)
+            .setMinValue(1),
+        ),
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('edit')
+        .setDescription('Edit an existing private personal note')
+        .addIntegerOption((opt) =>
+          opt
+            .setName('number')
+            .setDescription('The note number from /notes list')
+            .setRequired(true)
+            .setMinValue(1),
+        ),
+    )
+    .addSubcommand((sub) =>
+      sub
+        .setName('delete')
+        .setDescription('Delete a private personal note')
+        .addIntegerOption((opt) =>
+          opt
+            .setName('number')
+            .setDescription('The note number from /notes list')
+            .setRequired(true)
+            .setMinValue(1),
+        ),
+    ),
 ].map((command) => command.toJSON());
 
 const token = process.env.DISCORD_TOKEN;

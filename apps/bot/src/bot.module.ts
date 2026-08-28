@@ -8,6 +8,7 @@ import { DuelModule } from './features/duel/duel.module.js';
 import { FunModule } from './features/fun/fun.module.js';
 import { SettingsModule } from './features/settings/settings.module.js';
 import { BirthdayModule } from './features/birthday/birthday.module.js';
+import { NotesModule } from './features/notes/notes.module.js';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
@@ -25,6 +26,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     FunModule,
     SettingsModule,
     BirthdayModule,
+    NotesModule,
   ],
 })
 export class BotModule {}
