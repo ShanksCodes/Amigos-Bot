@@ -1,4 +1,4 @@
-import { MessageComponentInteraction } from 'discord.js';
+import { MessageComponentInteraction, ModalSubmitInteraction } from 'discord.js';
 
 export interface DiscordComponent {
   /**
@@ -10,5 +10,5 @@ export interface DiscordComponent {
   /**
    * Logic to execute when the component is interacted with.
    */
-  execute(interaction: MessageComponentInteraction): Promise<void>;
+  execute(interaction: MessageComponentInteraction | ModalSubmitInteraction): Promise<void>;
 }

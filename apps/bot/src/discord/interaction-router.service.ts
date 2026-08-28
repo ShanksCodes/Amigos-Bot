@@ -1,5 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { GuildMember, Interaction } from 'discord.js';
+import {
+  AutocompleteInteraction,
+  GuildMember,
+  Interaction,
+  InteractionReplyOptions,
+  MessageFlags,
+} from 'discord.js';
 import { getErrorMessage, getErrorStack } from '#app/common';
 import { CommandRegistryService } from './command-registry.service.js';
 import { ComponentRegistryService } from './component-registry.service.js';
@@ -19,7 +25,9 @@ export class InteractionRouterService {
     try {
       if (interaction.isChatInputCommand()) {
         await this.handleChatInputCommand(interaction);
-      } else if (interaction.isMessageComponent()) {
+      } else if (interaction.isAutocomplete()) {
+        await this.handleAutocomplete(interaction);
+      } else if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
         await this.handleMessageComponent(interaction);
       }
     } catch (error) {
@@ -29,9 +37,9 @@ export class InteractionRouterService {
       );
 
       if (interaction.isRepliable()) {
-        const errorResponse = {
+        const errorResponse: InteractionReplyOptions = {
           content: 'An error occurred while executing this interaction.',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         };
 
         if (interaction.deferred || interaction.replied) {
@@ -59,7 +67,7 @@ export class InteractionRouterService {
       if (interaction.isRepliable()) {
         await interaction.reply({
           content: 'This command is not recognized or is currently unavailable.',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
       return;
@@ -68,8 +76,27 @@ export class InteractionRouterService {
     await command.execute(interaction);
   }
 
+  private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+    const command = this.commandRegistry.get(interaction.commandName);
+    if (!command || !command.autocomplete) {
+      return;
+    }
+
+    try {
+      await command.autocomplete(interaction);
+    } catch (error) {
+      this.logger.error(
+        `Error executing autocomplete for /${interaction.commandName}: ${getErrorMessage(error)}`,
+        getErrorStack(error),
+      );
+      if (!interaction.responded) {
+        await interaction.respond([]).catch(() => {});
+      }
+    }
+  }
+
   private async handleMessageComponent(interaction: Interaction): Promise<void> {
-    if (!interaction.isMessageComponent()) return;
+    if (!interaction.isMessageComponent() && !interaction.isModalSubmit()) return;
 
     // Centrally ensure/sync identity before component execution
     await this.syncIdentity(interaction);
@@ -84,7 +111,7 @@ export class InteractionRouterService {
       if (interaction.isRepliable()) {
         await interaction.reply({
           content: 'This component is not recognized or is currently unavailable.',
-          ephemeral: true,
+          flags: MessageFlags.Ephemeral,
         });
       }
       return;
